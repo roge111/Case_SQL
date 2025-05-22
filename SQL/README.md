@@ -30,6 +30,7 @@ order by od.date DESC;
 
 `order by od.date DESC` — мы сортируем результат от новых к старым.
 ### Задание 2
+---
 
 ```
 select * from print_directory 
@@ -160,6 +161,7 @@ LIMIT 1;
 
 
 ### Задание 7
+---
 
 Триггер — это специальная процедура в базе данных, которая автоматически выполняется при наступлении определенного события.
 
@@ -249,27 +251,95 @@ END;
 - `object_identity` — полное имя объекта.
 
 Затем мы создаем триггеры:
+```
 
 `CREATE EVENT TRIGGERS log_ddl`
 
 ON `ddl_comand_end`
 
 EXECUTE `log_ddl actions();`
+```
 
-Задание 8:
+### Задание 8
+---
+```
+CREATE TABLE product_directory_audit IF NOT EXISTS (
+    id SERIAL PRIMARY KEY,
+    operation CHAR(1),
+    user_name TEXT,
+    change_time TIMESTAMP,
+    old_data JSONB,
+    new_data JSONB
+);
 
-Создать таблицу `product_directory_audits`, если она еще не существует.
+CREATE OR REPLACE FUNCTION log_product_changes()
 
-Если операция обновления, то вставить данные в таблицу.
+RETURNS TRIGGER
+LANGUAGE plpgsql AS $$
 
-Функция `log_product_change()` возвращает триггер.
+BEGIN
+    IF TG_OP = 'UPDATE' THEN
 
-Триггер `product_dir_audit_triggger` срабатывает после обновления таблицы `product_directoy`.
+    INSERT INTO product_directory_audi  (
+        operation,
+        user_name,
+        change_time,
+        old_data,
+        new_data
+    )
+
+    VALUES (
+        'U',
+        current_user,
+        current_timestamp,
+        to_jsonb(OLD),
+        to_jsonb(NEW)
+    );
+    END IF;
+    RETURN NEW;
+
+END;
+
+CREATE TRIGGER product_directory_audit_trigger
+AFTER UPDATE ON product_directory
+FOR EACH ROW EXECUTE FUNCTION log_product_changes();
+```
+
+Тут я не буду комментировать
+
+### Задание 9
+----
+```
+
 ```
 CREATE DATABASE company_db;
 \c company_db
 ```
+CREATE DATABASE company_db;
+\c company_db
 
+CREATE SCHEMA business;
+
+CREATE USER admin_user PASSWORD 'admin_password';
+GRANT ALL ON SCHEMA business TO admin_user;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA business TO admin_user;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA business TO admin_user;
+
+CREATE USER read_user WITH PASSWORD 'read_password';
+GRANT USAGE ON SCHEMA business to read_user;
+GRANT SELECT ON ALL TABLES IN SCHEMA business TO read_user;
+
+SET ROLE admin_user;
+CREATE TABLE business. test_table (id SERIAL);
+DROP TABLE business. test_table;
+RESET ROLE;
+
+SET ROLE read_user;
+SELECT * FROM business.any_table;
+RESET ROLE;
+```
+
+Сначала создаем базу даных и подклчюемся в ней.
 Создаем схему `business`:
 ```
 CREATE SCHEMA business;
