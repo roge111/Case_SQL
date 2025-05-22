@@ -88,46 +88,31 @@ LIMIT 1;
 
 -- Задание 7
 CREATE OR REPLACE FUNCTION log_ddl_actions()
-
 RETURNS event_trigger
-
 LANGUAGE plpgsql AS $$
-
 BEGIN
-
     INSERT INTO ddl_log (event_type, object_type, object_name, user_name, ddl_time)
-
     VALUES (
-
         tg_event,
-
         tg_tag,
-
         (SELECT object_identity FROM pg_event_trigger_ddl_commands() LIMIT 1),
-
         current_user,
-
         current_timestamp
-
     );
-
 END;
 
 CREATE TABLE IF NOT EXISTS ddl_log (
 
     id SERIAL PRIMARY KEY,
-
     event_type TEXT,
-
     object_type TEXT,
-
     object_name TEXT,
-
     user_name TEXT,
-
     ddl_time TIMESTAMP
 
 );
+
+re
 
 --  Задание 8
 
@@ -175,33 +160,24 @@ FOR EACH ROW EXECUTE FUNCTION log_product_changes();
 -- Задание 9
 
 CREATE DATABASE company_db;
-
 \c company_db
 
 CREATE SCHEMA business;
 
 CREATE USER admin_user PASSWORD 'admin_password';
-
 GRANT ALL ON SCHEMA business TO admin_user;
-
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA business TO admin_user;
-
 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA business TO admin_user;
 
 CREATE USER read_user WITH PASSWORD 'read_password';
-
 GRANT USAGE ON SCHEMA business to read_user;
-
 GRANT SELECT ON ALL TABLES IN SCHEMA business TO read_user;
 
 SET ROLE admin_user;
-
 CREATE TABLE business. test_table (id SERIAL);
-
 DROP TABLE business. test_table;
-
 RESET ROLE;
 
 SET ROLE read_user;
-
+SELECT * FROM business.any_table;
 RESET ROLE;
