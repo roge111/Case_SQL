@@ -197,6 +197,10 @@ CREATE TABLE IF NOT EXISTS ddl_log (
     ddl_time TIMESTAMP
 
 );
+
+CREATE EVENT TRIGGER log_ddl_trigger
+ON ddl_command_end
+EXECUTE FUNCTION log_ddl_actions();
 ```
 
 Сначала мы создадим таблицу для логов.
@@ -253,11 +257,9 @@ END;
 Затем мы создаем триггеры:
 ```
 
-`CREATE EVENT TRIGGERS log_ddl`
-
-ON `ddl_comand_end`
-
-EXECUTE `log_ddl actions();`
+CREATE EVENT TRIGGERS log_ddl
+ON ddl_comand_end
+EXECUTE log_ddl actions();
 ```
 
 ### Задание 8
@@ -309,11 +311,7 @@ FOR EACH ROW EXECUTE FUNCTION log_product_changes();
 
 ### Задание 9
 ----
-```
 
-```
-CREATE DATABASE company_db;
-\c company_db
 ```
 CREATE DATABASE company_db;
 \c company_db
@@ -339,12 +337,13 @@ SELECT * FROM business.any_table;
 RESET ROLE;
 ```
 
-Сначала создаем базу даных и подклчюемся в ней.
-Создаем схему `business`:
-```
-CREATE SCHEMA business;
-```
+Создаем базу данных и подключаемся к ней:
 
+```
+CREATE DATABASE company_db;
+\c company_db
+
+```
 Создаем `admin_user` с полными правами, как того и требует задача:
 
 ```
