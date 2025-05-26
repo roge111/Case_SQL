@@ -208,7 +208,7 @@ def profit(row, minimum):
   else:
     return 0
   prof = revenue - (fix_price*count_orders + revenue*tax + revenue*0.17)
-  return prof if prof > 0 else 0
+  return prof
 
 df_ex1['Прибыль, руб.'] = df_ex1.apply(profit, minimum = minimum, axis=1)
 ```
